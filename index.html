@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Cœur Interactif</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="heartCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const particles = [];
+        const particleCount = 1200;
+        const targetPoints = [];
+
+        const mouse = {
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2,
+            tx: window.innerWidth / 2,
+            ty: window.innerHeight / 2
+        };
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.tx = e.clientX;
+            mouse.ty = e.clientY;
+        });
+
+        // Version pour les écrans tactiles des téléphones
+        window.addEventListener('touchmove', (e) => {
+            if(e.touches.length > 0) {
+                mouse.tx = e.touches[0].clientX;
+                mouse.ty = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        function getHeartPoint(t) {
+            const x = 16 * Math.pow(Math.sin(t), 3);
+            const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+            // Taille légèrement adaptée pour le mobile
+            const scale = window.innerWidth < 600 ? 10 : 15;
+            return { x: x * scale, y: -y * scale };
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            const t = (i / particleCount) * 2 * Math.PI;
+            targetPoints.push(getHeartPoint(t));
+        }
+
+        class Particle {
+            constructor(index) {
+                this.index = index;
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.5;
+                const h = Math.random() * 30 + 330;
+                const s = Math.random() * 20 + 80;
+                const l = Math.random() * 20 + 60;
+                this.color = `hsl(${h}, ${s}%, ${l}%)`;
+                this.speed = Math.random() * 0.04 + 0.02;
+            }
+
+            update() {
+                mouse.x += (mouse.tx - mouse.x) * 0.08;
+                mouse.y += (mouse.ty - mouse.y) * 0.08;
+
+                const target = targetPoints[this.index];
+                const targetX = target.x + mouse.x;
+                const targetY = target.y + mouse.y;
+
+                this.x += (targetX - this.x) * this.speed;
+                this.y += (targetY - this.y) * this.speed;
+
+                this.x += (Math.random() - 0.5) * 0.5;
+                this.y += (Math.random() - 0.5) * 0.5;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle(i));
+        }
+
+        function render() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            requestAnimationFrame(render);
+        }
+
+        render();
+    </script>
+</body>
+</html>
