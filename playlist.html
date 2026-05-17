@@ -27,7 +27,34 @@
             width: 100%;
             max-width: 400px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Bouton Retour */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #a0aec0;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            align-self: flex-start;
+            transition: color 0.2s, transform 0.2s;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .back-btn:hover {
+            color: #00bfff;
+            transform: translateX(-3px);
+        }
+
+        /* Centre le contenu sous le bouton retour */
+        .player-content {
             text-align: center;
+            width: 100%;
         }
 
         /* Zone du titre en cours */
@@ -154,39 +181,43 @@
 <body>
 
     <div class="player-container">
-        <div class="now-playing">Lecture en cours</div>
-        <h2 class="track-title" id="current-title">Titre du morceau</h2>
-        <p class="track-artist" id="current-artist">Artiste</p>
+        <a href="index.html" class="back-btn">⬅️ Retour</a>
+        
+        <div class="player-content">
+            <div class="now-playing">Lecture en cours</div>
+            <h2 class="track-title" id="current-title">Titre du morceau</h2>
+            <p class="track-artist" id="current-artist">Artiste</p>
 
-        <audio id="main-audio" src=""></audio>
+            <audio id="main-audio" src=""></audio>
 
-        <div class="progress-area" id="progress-area">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
-        <div class="time-box">
-            <span id="current-time">0:00</span>
-            <span id="total-duration">0:00</span>
-        </div>
+            <div class="progress-area" id="progress-area">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="time-box">
+                <span id="current-time">0:00</span>
+                <span id="total-duration">0:00</span>
+            </div>
 
-        <div class="controls">
-            <button class="control-btn" id="prev-btn">⏮️</button>
-            <button class="control-btn play-pause-btn" id="play-btn">▶️</button>
-            <button class="control-btn" id="next-btn">⏭️</button>
-        </div>
+            <div class="controls">
+                <button class="control-btn" id="prev-btn">⏮️</button>
+                <button class="control-btn play-pause-btn" id="play-btn">▶️</button>
+                <button class="control-btn" id="next-btn">⏭️</button>
+            </div>
 
-        <div class="playlist-box">
-            <h3 class="playlist-title">Ma Liste</h3>
-            <div id="playlist-tracks">
-                </div>
+            <div class="playlist-box">
+                <h3 class="playlist-title">Ma Liste</h3>
+                <div id="playlist-tracks">
+                    </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // === 1. TA LISTE DE MUSIQUES (À MODIFIER PLUS TARD) ===
+        // === TA LISTE DE MUSIQUES (À MODIFIER ICI) ===
         const myTracks = [
-            { name: "MILLION DOLLAR BABY", artist: "Tommy Richman", file: "track1.mp3" },
-            { name: "The Box", artist: "Robby Ricch", file: "track2.mp3" },
-            { name: "WE ON GO", artist: "BIA", file: "track3.mp3" }
+            { name: "Love Me Not", artist: "Ravyn Lenae", file: "track1.mp3" },
+            { name: "Exemple Chanson 2", artist: "Artiste 2", file: "track2.mp3" },
+            { name: "Exemple Chanson 3", artist: "Artiste 3", file: "track3.mp3" }
         ];
 
         let trackIndex = 0;
@@ -205,18 +236,14 @@
         const totalDurationElement = document.getElementById('total-duration');
         const playlistTracksContainer = document.getElementById('playlist-tracks');
 
-        // Charger une musique
         function loadTrack(index) {
             const track = myTracks[index];
             audio.src = track.file;
             currentTitle.innerText = track.name;
             currentArtist.innerText = track.artist;
-            
-            // Mettre à jour le style visuel de la liste
             highlightCurrentTrack();
         }
 
-        // Générer visuellement la liste HTML
         function buildPlaylist() {
             playlistTracksContainer.innerHTML = "";
             myTracks.forEach((track, i) => {
@@ -241,11 +268,10 @@
             });
         }
 
-        // Fonctions de lecture
         function playTrack() {
             isPlaying = true;
             playBtn.innerText = "⏸️";
-            audio.play().catch(e => console.log("En attente d'interaction utilisateur..."));
+            audio.play().catch(e => console.log("En attente de lecture..."));
         }
 
         function pauseTrack() {
@@ -260,7 +286,6 @@
             playTrack();
         }
 
-        // Événement clic bouton Play principal
         playBtn.addEventListener('click', () => {
             if (isPlaying) pauseTrack(); else playTrack();
         });
@@ -277,17 +302,14 @@
             playTrack();
         });
 
-        // Gestion du défilement du temps
         audio.addEventListener('timeupdate', (e) => {
             const currentTime = e.target.currentTime;
             const duration = e.target.duration;
             
             if (duration) {
-                // Avancée de la barre bleue
                 const progressPercent = (currentTime / duration) * 100;
                 progressBar.style.width = `${progressPercent}%`;
 
-                // Affichage du texte des minutes/secondes
                 let currentMins = Math.floor(currentTime / 60);
                 let currentSecs = Math.floor(currentTime % 60);
                 if (currentSecs < 10) currentSecs = `0${currentSecs}`;
@@ -295,7 +317,6 @@
             }
         });
 
-        // Récupérer la durée totale du fichier
         audio.addEventListener('loadeddata', () => {
             let mainDuration = audio.duration;
             let totalMins = Math.floor(mainDuration / 60);
@@ -304,7 +325,6 @@
             totalDurationElement.innerText = `${totalMins}:${totalSecs}`;
         });
 
-        // Rendre la barre de progression cliquable pour avancer dans le morceau
         progressArea.addEventListener('click', (e) => {
             const coordX = e.offsetX;
             const totalWidth = progressArea.clientWidth;
@@ -316,14 +336,12 @@
             }
         });
 
-        // Passer au morceau suivant automatiquement à la fin
         audio.addEventListener('ended', () => {
             trackIndex = (trackIndex + 1) % myTracks.length;
             loadTrack(trackIndex);
             playTrack();
         });
 
-        // Initialisation au chargement
         window.onload = () => {
             buildPlaylist();
             loadTrack(trackIndex);
