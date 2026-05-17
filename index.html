@@ -3,29 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>heart</title>
+    <title>Mon Univers - Bienvenue</title>
     <style>
+        /* --- GLOBAL STYLES --- */
+        * {
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
         body {
             margin: 0;
-            overflow: hidden;
-            background-color: #000;
+            background-color: #05050a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* --- SECTION 1: INTERACTIVE HEART INTRO --- */
+        .intro-section {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            overflow: hidden;
+        }
+        #video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
         }
         canvas {
             position: absolute;
             top: 0;
             left: 0;
             display: block;
+            z-index: 1;
+        }
+        #lyrics-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            text-align: center;
+            color: #ffffff;
+            font-size: 1.6rem;
+            font-weight: bold;
+            text-shadow: 0 0 15px #00bfff, 0 0 25px rgba(0, 191, 255, 0.6);
+            z-index: 2;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            line-height: 1.4;
+        }
+        #music-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            background: rgba(0, 119, 255, 0.3);
+            color: white;
+            border: 1px solid rgba(0, 119, 255, 0.6);
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 119, 255, 0.4);
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* The glowing Enter Button at the bottom */
+        .enter-btn {
+            position: absolute;
+            bottom: 40px;
+            z-index: 10;
+            background: linear-gradient(45deg, #0077ff, #00d4ff);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.5);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .enter-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 191, 255, 0.8);
+        }
+
+        /* --- SECTION 2: SOCIAL PROFILE SECTION --- */
+        .profile-section {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            background: radial-gradient(circle at center, #0a1128 0%, #05050a 100%);
+            position: relative;
+        }
+        .profile-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 191, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+        .profile-img {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #00bfff;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.4);
+            margin-bottom: 20px;
+        }
+        .profile-name {
+            font-size: 1.8rem;
+            margin: 0 0 10px 0;
+            letter-spacing: 0.5px;
+            background: linear-gradient(45deg, #fff, #00bfff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .profile-bio {
+            font-size: 1rem;
+            color: #a0aec0;
+            margin: 0 0 30px 0;
+            line-height: 1.5;
+        }
+        
+        /* Social Link Buttons styling */
+        .social-links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .social-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            border-radius: 14px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        /* Dynamic button colors */
+        .instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+        .tiktok { background: #000000; border: 1px solid #ff0050; }
+        .spotify { background: #1DB954; color: #000; }
+        .generic-link { background: rgba(255, 255, 255, 0.07); }
+
+        .social-button:hover {
+            transform: scale(1.03);
+            box-shadow: 0 5px 15px rgba(0, 191, 255, 0.3);
         }
     </style>
 </head>
 <body>
-    <canvas id="heartCanvas"></canvas>
+
+    <section class="intro-section">
+        <video id="video-background" autoplay loop muted playsinline>
+            <source src="fond.mp4" type="video/mp4">
+        </video>
+
+        <button id="music-btn" onclick="toggleMusic()">🎵 Play "Love Me Not"</button>
+        <audio id="myAudio" src="musique.mp3" preload="auto"></audio>
+
+        <div id="lyrics-container">Clique sur Play pour lancer la surprise...</div>
+
+        <canvas id="heartCanvas"></canvas>
+
+        <a href="#social-profile" class="enter-btn">Découvrir mon profil</a>
+    </section>
+
+
+    <section id="social-profile" class="profile-section">
+        <div class="profile-card">
+            
+            <img class="profile-img" src="https://via.placeholder.com/150" alt="Profile Picture">
+            
+            <h2 class="profile-name">Ton Nom / Pseudo</h2>
+            
+            <p class="profile-bio">Bienvenue sur mon espace. Codeur passionné, gamer et skateur. Défile vers le bas pour retrouver tous mes réseaux sociaux !</p>
+            
+            <div class="social-links-container">
+                
+                <a href="https://instagram.com/ton_username" target="_blank" class="social-button instagram">
+                    📸 Instagram
+                </a>
+                
+                <a href="https://tiktok.com/@ton_username" target="_blank" class="social-button tiktok">
+                    🎵 TikTok
+                </a>
+                
+                <a href="https://spotify.com" target="_blank" class="social-button spotify">
+                    🎧 Ma Playlist Spotify
+                </a>
+                
+                <a href="https://github.com" target="_blank" class="social-button generic-link">
+                    🌐 Mon GitHub
+                </a>
+                
+            </div>
+        </div>
+    </section>
 
     <script>
+        // --- LYRICS TRACK DATA ---
+        const lyricsData = [
+            { time: 0, text: "🎵 Ravyn Lenae - Love Me Not 🎵" },
+            { time: 17, text: "See right now I need you, I'll meet you somewhere now" },
+            { time: 21, text: "You up now, I see you, I get you, take care now" },
+            { time: 24, text: "Slow down, be cool, I miss you, come here now" },
+            { time: 28, text: "And now keep it, I'll hold out until now" },
+            { time: 32, text: "I need you right now, once I leave you I'm out" },
+            { time: 36, text: "If I get you I'm slow and breaking down..." },
+            { time: 40, text: "And know it's hard to see you, but I wish you were right here" },
+            { time: 43, text: "Oh, it's hard to leave you when I get you everywhere" },
+            { time: 47, text: "All this time I'm thinking we could never be a pair, oh no" },
+            { time: 51, text: "I don't need you, but I miss you, come here" },
+            { time: 55, text: "Oh, it's hard to see you, but I wish you were right here" },
+            { time: 59, text: "Oh, it's hard to leave you when I get you everywhere" },
+            { time: 63, text: "Oh, this time I'm thinking I'm strong enough to sink it, oh no" },
+            { time: 68, text: "I don't need you, but I miss you, come here" },
+            { time: 72, text: "He love me, he loves me<br>He holds me tight then lets me go 🌸" },
+            { time: 78, text: "He love me, he loves me<br>He holds me tight then lets me go" },
+            { time: 83, text: "Soon as you leave me, we always lose connection" },
+            { time: 87, text: "It's getting messy, I feed your affection" },
+            { time: 91, text: "Don't loosen your grip, got a hold on me now forever" },
+            { time: 97, text: "Let's get back together" },
+            { time: 100, text: "Don't take it so far away" },
+            { time: 103, text: "I pray to God we don't break" },
+            { time: 106, text: "I want you to take me up and down<br>Around and around again" },
+            { time: 111, text: "And know it's hard to say, but I wish you were right here" },
+            { time: 115, text: "Oh, it's hard to leave you when I get you everywhere" },
+            { time: 119, text: "All this time I'm thinking we could never be a pair, oh no" },
+            { time: 123, text: "I don't need you, but I miss you, come here" },
+            { time: 127, text: "Oh, it's hard to see you, but I wish you were right here" },
+            { time: 131, text: "Oh, it's hard to leave you when I get you everywhere" },
+            { time: 135, text: "Oh, this time I'm thinking I'm strong enough to sink it, oh no" },
+            { time: 140, text: "I don't need you, but I miss you, come here" },
+            { time: 144, text: "He love me not, he loves me<br>He holds me tight then lets me go" },
+            { time: 150, text: "He love me not, he loves me<br>He holds me tight then lets me go" },
+            { time: 154, text: "He loves me not, he loves me<br>He holds me tight then lets me go" },
+            { time: 158, text: "He love me not, he loves me<br>He holds me tight then let me go 💖" },
+            { time: 162, text: "You got to say that you're sorry at the end of the night" },
+            { time: 166, text: "Wake up in the morning, everything's all right" },
+            { time: 170, text: "At the end of the story, you're holding me tight" },
+            { time: 174, text: "I don't need to worry..." },
+            { time: 177, text: "And know it's hard to see you, but I wish you right here" },
+            { time: 181, text: "Oh, it's hard to leave you when I get you everywhere" },
+            { time: 185, text: "All this time I'm thinking I'm strong enough to sink it, oh no" },
+            { time: 191, text: "I don't need you, but I miss you, come here..." },
+            { time: 200, text: "🎵 ✨" }
+        ];
+
+        const audio = document.getElementById('myAudio');
+        const lyricsContainer = document.getElementById('lyrics-container');
+        const musicBtn = document.getElementById('music-btn');
+
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play().catch(e => { console.log(e); });
+                musicBtn.innerText = "⏸️ Pause";
+            } else {
+                audio.pause();
+                musicBtn.innerText = "🎵 Play \"Love Me Not\"";
+            }
+        }
+
+        audio.addEventListener('timeupdate', () => {
+            const currentTime = audio.currentTime;
+            let currentText = "";
+
+            for (let i = 0; i < lyricsData.length; i++) {
+                if (currentTime >= lyricsData[i].time) { currentText = lyricsData[i].text; }
+            }
+            if (lyricsContainer.innerHTML !== currentText && currentText !== "") {
+                lyricsContainer.style.opacity = 0;
+                setTimeout(() => {
+                    lyricsContainer.innerHTML = currentText;
+                    lyricsContainer.style.opacity = 1;
+                }, 120);
+            }
+        });
+
+        // --- PARTICLE HEART SCRIPT ---
         const canvas = document.getElementById('heartCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -37,7 +321,7 @@
         window.addEventListener('resize', resizeCanvas);
 
         const particles = [];
-        const particleCount = 1200;
+        const particleCount = 1000;
         const targetPoints = [];
 
         const mouse = {
@@ -48,13 +332,15 @@
         };
 
         window.addEventListener('mousemove', (e) => {
-            mouse.tx = e.clientX;
-            mouse.ty = e.clientY;
+            // Only update coordinates if mouse is inside the first viewport screen
+            if (window.scrollY < window.innerHeight) {
+                mouse.tx = e.clientX;
+                mouse.ty = e.clientY;
+            }
         });
 
-        // Version pour les écrans tactiles des téléphones
         window.addEventListener('touchmove', (e) => {
-            if(e.touches.length > 0) {
+            if(e.touches.length > 0 && window.scrollY < window.innerHeight) {
                 mouse.tx = e.touches[0].clientX;
                 mouse.ty = e.touches[0].clientY;
             }
@@ -63,8 +349,7 @@
         function getHeartPoint(t) {
             const x = 16 * Math.pow(Math.sin(t), 3);
             const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-            // Taille légèrement adaptée pour le mobile
-            const scale = window.innerWidth < 600 ? 10 : 15;
+            const scale = window.innerWidth < 600 ? 9 : 14;
             return { x: x * scale, y: -y * scale };
         }
 
@@ -79,9 +364,11 @@
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
                 this.size = Math.random() * 1.5 + 0.5;
-                const h = Math.random() * 30 + 330;
-                const s = Math.random() * 20 + 80;
-                const l = Math.random() * 20 + 60;
+                
+                const h = Math.random() * 35 + 190; // Pure blue spectrum
+                const s = Math.random() * 15 + 85;
+                const l = Math.random() * 20 + 55;
+                
                 this.color = `hsl(${h}, ${s}%, ${l}%)`;
                 this.speed = Math.random() * 0.04 + 0.02;
             }
@@ -97,8 +384,8 @@
                 this.x += (targetX - this.x) * this.speed;
                 this.y += (targetY - this.y) * this.speed;
 
-                this.x += (Math.random() - 0.5) * 0.5;
-                this.y += (Math.random() - 0.5) * 0.5;
+                this.x += (Math.random() - 0.5) * 0.4;
+                this.y += (Math.random() - 0.5) * 0.4;
             }
 
             draw() {
@@ -109,22 +396,22 @@
             }
         }
 
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle(i));
-        }
+        for (let i = 0; i < particleCount; i++) { particles.push(new Particle(i)); }
 
         function render() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.16)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
+            // Stop calculating particles if completely scrolled out of the view to save battery
+            if (window.scrollY < window.innerHeight) {
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+            }
 
             requestAnimationFrame(render);
         }
-
         render();
     </script>
 </body>
